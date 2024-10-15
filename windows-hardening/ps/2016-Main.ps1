@@ -23,8 +23,9 @@ Start-Transcript -Path $LOGS\PS-MAINS-OUT.txt
     #echo "`nTo re-enable all users use this command:"
     #echo "Get-LocalUser | Where-Object {`$_.Name -ne `"Guest`" -and `$_.Name -ne `"DefaultAccount`"} | Enable-LocalUser"
 
-    echo "`nResetting all passwords to printer..."
-    Get-LocalUser | Where-Object {$_.Name -ne $Env:UserName -and $_.Name -ne "Printer"} | Set-LocalUser -Password printer
+    echo "`nResetting all passwords..."
+    $Password = Read-Host "Enter the new password for users" -AsSecureString
+    Get-LocalUser | Where-Object {$_.Name -ne $Env:UserName -and $_.Name -ne "Printer"} | Set-LocalUser -Password $Password
 
     echo "`nGetting all local users..."
     Get-LocalUser

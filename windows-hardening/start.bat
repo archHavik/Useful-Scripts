@@ -1,4 +1,4 @@
-powershell Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+powershell Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force
 
 FOR /F "tokens=2" %%g IN ('powershell $PSVersionTable ^| findstr /C:"PSVersion"') do (SET version=%%g)
 
