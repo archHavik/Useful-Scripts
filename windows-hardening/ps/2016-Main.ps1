@@ -7,21 +7,24 @@ Start-Transcript -Path $LOGS\PS-MAINS-OUT.txt
 . {
     echo "`n******************** CONFIGURING USERS ********************`n"
 
-    echo "`nChanging current user's password..."
-    $UserAccount = Get-LocalUser -Name $($Env:UserName)
-    $Password = Read-Host "Enter the new password for $UserAccount" -AsSecureString
-    $UserAccount | Set-LocalUser -Password $Password
+    #echo "`nChanging current user's password..."
+    #$UserAccount = Get-LocalUser -Name $($Env:UserName)
+    #$Password = Read-Host "Enter the new password for $UserAccount" -AsSecureString
+    #$UserAccount | Set-LocalUser -Password $Password
 
-    echo "`nCreating new local user 'Printer'..."
-    $Password = Read-Host "Enter the new password for Printer" -AsSecureString
-    New-LocalUser -Name Printer -Password $Password
-    Add-LocalGroupMember -Group "Administrators" -Member "Printer"
+    #echo "`nCreating new local user 'Printer'..."
+    #$Password = Read-Host "Enter the new password for Printer" -AsSecureString
+    #New-LocalUser -Name Printer -Password $Password
+    #Add-LocalGroupMember -Group "Administrators" -Member "Printer"
 
-    echo "`nDisabling all users except current and Printer..."
-    Get-LocalUser | Where-Object {$_.Name -ne $Env:UserName -and $_.Name -ne "Printer"} | Disable-LocalUser
+    #echo "`nDisabling all users except current and Printer..."
+    #Get-LocalUser | Where-Object {$_.Name -ne $Env:UserName -and $_.Name -ne "Printer"} | Disable-LocalUser
 
-    echo "`nTo re-enable all users use this command:"
-    echo "Get-LocalUser | Where-Object {`$_.Name -ne `"Guest`" -and `$_.Name -ne `"DefaultAccount`"} | Enable-LocalUser"
+    #echo "`nTo re-enable all users use this command:"
+    #echo "Get-LocalUser | Where-Object {`$_.Name -ne `"Guest`" -and `$_.Name -ne `"DefaultAccount`"} | Enable-LocalUser"
+
+    echo "`nResetting all passwords to printer..."
+    Get-LocalUser | Where-Object {$_.Name -ne $Env:UserName -and $_.Name -ne "Printer"} | Set-LocalUser -Password printer
 
     echo "`nGetting all local users..."
     Get-LocalUser
@@ -51,6 +54,8 @@ Start-Transcript -Path $LOGS\PS-MAINS-OUT.txt
     Set-Service Spooler -StartupType Disabled -PassThru
 
     echo "`n******************** DEFENDER AND ANTIVIRUS ********************`n"
+
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender' -Name DisableAntiSpyware -Value '0' -Type Dword
 
     echo "`nUpdating signatures in new window..."
     Start-Process powershell "echo 'Updating AV signatures...'; Update-MpSignature"
